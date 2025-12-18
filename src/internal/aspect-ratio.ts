@@ -3,14 +3,14 @@ import { WHITESPACE_REGEX } from "./constants.js";
 import { parseVariantToken } from "./tailwind-variants.js";
 
 const ASPECT_FRACTION_REGEX = /^aspect-(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/;
-const ASPECT_ARBITRARY_REGEX = /^aspect-\[(.+)\]$/;
+const ASPECT_BRACKET_REGEX = /^aspect-\[(.+)\]$/;
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
 function isStaticImageData(value: unknown): value is StaticImageData {
-  if (!isRecord(value)) {
+  if (!isPlainObject(value)) {
     return false;
   }
   return typeof value.width === "number" && typeof value.height === "number";
@@ -22,7 +22,7 @@ export function getSrcAspectRatio(src: unknown): number | null {
   }
 
   if (
-    isRecord(src) &&
+    isPlainObject(src) &&
     isStaticImageData(src.default) &&
     src.default.height > 0 &&
     src.default.width > 0
@@ -56,7 +56,7 @@ function parseAspectRatioFromBaseToken(baseToken: string): number | null {
     return null;
   }
 
-  const match = ASPECT_ARBITRARY_REGEX.exec(baseToken);
+  const match = ASPECT_BRACKET_REGEX.exec(baseToken);
   if (!match) {
     return null;
   }

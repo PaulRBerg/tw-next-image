@@ -9,7 +9,7 @@ import type { SmartImageProps } from "./smart-image.types.js";
 
 const HAS_HEIGHT_OR_ASPECT_CLASS_REGEX = /(^|\s)(size-|h-|max-h-|aspect-)/;
 
-function getDerivedAlt({
+function inferAltText({
   alt,
   ariaHidden,
   src,
@@ -28,7 +28,7 @@ function getDerivedAlt({
   return getAltFromSrc(typeof src === "string" ? src : "");
 }
 
-function warnMissingLayoutSizingOnce({
+function warnMissingLayoutSizing({
   className,
   ratio,
   style,
@@ -93,10 +93,10 @@ export function createSmartImage(options: CreateSmartImageOptions = {}): SmartIm
     style,
     ...props
   }: SmartImageProps<C, S>) {
-    const derivedAlt = getDerivedAlt({ alt, ariaHidden: props["aria-hidden"], src });
+    const derivedAlt = inferAltText({ alt, ariaHidden: props["aria-hidden"], src });
     const inferredSizes = sizes ?? inferImageSizes({ className, ratio, src, style });
 
-    didWarnMissingLayoutSizing = warnMissingLayoutSizingOnce({
+    didWarnMissingLayoutSizing = warnMissingLayoutSizing({
       className,
       didWarn: didWarnMissingLayoutSizing,
       ratio,

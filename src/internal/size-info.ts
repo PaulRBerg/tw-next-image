@@ -71,7 +71,7 @@ export function parseSizeInfoByBreakpoint(
     const key: BreakpointKey = breakpoint ?? "base";
 
     const existing = byBreakpoint[key] ?? {};
-    const didApply = applySizingBaseTokenToInfo({
+    const didApply = applySizingToken({
       baseSpacingPx,
       baseToken,
       breakpoints,
@@ -118,7 +118,7 @@ type ApplySizingOptions = {
   info: SizeInfo;
 };
 
-function applySizingBaseTokenToInfo({
+function applySizingToken({
   baseSpacingPx,
   baseToken,
   breakpoints,

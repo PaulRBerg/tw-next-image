@@ -20,7 +20,7 @@ export function parseTailwindLength(
     parseTailwindLengthFromFraction(raw) ??
     parseTailwindLengthFromArbitraryBrackets(raw) ??
     parseTailwindLengthFromArbitraryParens(raw) ??
-    parseTailwindLengthFromNumber(raw, baseSpacingPx)
+    parseTailwindLengthFromSpacingUnit(raw, baseSpacingPx)
   );
 }
 
@@ -113,7 +113,7 @@ function parseTailwindLengthFromArbitraryParens(raw: string): string | null {
   return inner;
 }
 
-function parseTailwindLengthFromNumber(raw: string, baseSpacingPx: number): string | null {
+function parseTailwindLengthFromSpacingUnit(raw: string, baseSpacingPx: number): string | null {
   const numberValue = Number(raw);
   if (!Number.isFinite(numberValue) || numberValue < 0) {
     return null;

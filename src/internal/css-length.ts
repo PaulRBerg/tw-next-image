@@ -47,10 +47,10 @@ export function formatPx(value: number): string {
 }
 
 export function minPx(a: string, b: string): string | null {
-  const aPx = parsePxNumber(a);
-  const bPx = parsePxNumber(b);
-  if (aPx === null || bPx === null) {
+  const firstPx = parsePxNumber(a);
+  const secondPx = parsePxNumber(b);
+  if (firstPx === null || secondPx === null) {
     return null;
   }
-  return formatPx(Math.min(aPx, bPx));
+  return formatPx(Math.min(firstPx, secondPx));
 }

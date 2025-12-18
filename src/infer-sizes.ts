@@ -7,7 +7,7 @@ import type { InferSizesInput, SizeInfo } from "./types.js";
 
 const DEFAULT_BASE_SPACING_PX = 4;
 
-function resolveWidthCandidate(info: SizeInfo, aspectRatio: number | null): string | null {
+function computeResolvedWidth(info: SizeInfo, aspectRatio: number | null): string | null {
   const fromWidthOrMax = (() => {
     if (info.width && info.maxWidth) {
       return minPx(info.width, info.maxWidth) ?? `min(${info.width}, ${info.maxWidth})`;
@@ -56,15 +56,15 @@ function buildBreakpointConditions(
   );
 
   for (const [breakpoint, minWidthPx] of orderedBreakpoints) {
-    const info = byBreakpoint[breakpoint];
-    if (!info) {
+    const sizeInfo = byBreakpoint[breakpoint];
+    if (!sizeInfo) {
       continue;
     }
-    const resolved = resolveWidthCandidate(info, aspectRatio);
-    if (!resolved) {
+    const resolvedWidth = computeResolvedWidth(sizeInfo, aspectRatio);
+    if (!resolvedWidth) {
       continue;
     }
-    conditions.push(`(min-width: ${minWidthPx}px) ${resolved}`);
+    conditions.push(`(min-width: ${minWidthPx}px) ${resolvedWidth}`);
   }
 
   return conditions;
@@ -101,7 +101,7 @@ export function inferImageSizes({
 
   const aspectRatio = ratio ?? getSrcAspectRatio(src) ?? getAspectRatioFromClassName(className);
 
-  const resolvedBase = resolveWidthCandidate(baseInfo, aspectRatio);
+  const resolvedBase = computeResolvedWidth(baseInfo, aspectRatio);
   if (!resolvedBase) {
     return null;
   }
