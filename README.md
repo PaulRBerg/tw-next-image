@@ -27,6 +27,17 @@ import { SmartImage } from "tw-next-image";
 `SmartImage` wraps `next/image` with `fill` mode—ensure the wrapper has height via `size-*`, `h-*`, `aspect-*`, or
 inline styles.
 
+## Custom `tailwind-merge` (Recommended)
+
+If your app has a custom `tailwind-merge` config, inject it via `createSmartImage`:
+
+```tsx
+import { createSmartImage } from "tw-next-image";
+import { customTwMerge } from "./tailwind/merge";
+
+export const SmartImage = createSmartImage({ cx: customTwMerge });
+```
+
 ## License
 
 MIT

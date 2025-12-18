@@ -1,7 +1,7 @@
 import type { StaticImageData } from "../types.js";
+import { WHITESPACE_REGEX } from "./constants.js";
 import { parseVariantToken } from "./tailwind-variants.js";
 
-const WHITESPACE_REGEX = /\s+/;
 const ASPECT_FRACTION_REGEX = /^aspect-(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/;
 const ASPECT_ARBITRARY_REGEX = /^aspect-\[(.+)\]$/;
 
@@ -17,11 +17,16 @@ function isStaticImageData(value: unknown): value is StaticImageData {
 }
 
 export function getSrcAspectRatio(src: unknown): number | null {
-  if (isStaticImageData(src) && src.height !== 0) {
+  if (isStaticImageData(src) && src.height > 0 && src.width > 0) {
     return src.width / src.height;
   }
 
-  if (isRecord(src) && isStaticImageData(src.default) && src.default.height !== 0) {
+  if (
+    isRecord(src) &&
+    isStaticImageData(src.default) &&
+    src.default.height > 0 &&
+    src.default.width > 0
+  ) {
     return src.default.width / src.default.height;
   }
 
@@ -40,7 +45,12 @@ function parseAspectRatioFromBaseToken(baseToken: string): number | null {
   if (fractionMatch) {
     const numerator = Number(fractionMatch[1]);
     const denominator = Number(fractionMatch[2]);
-    if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0) {
+    if (
+      Number.isFinite(numerator) &&
+      Number.isFinite(denominator) &&
+      numerator > 0 &&
+      denominator > 0
+    ) {
       return numerator / denominator;
     }
     return null;
@@ -58,14 +68,19 @@ function parseAspectRatioFromBaseToken(baseToken: string): number | null {
 
   if (raw.includes("/")) {
     const [numerator, denominator] = raw.split("/", 2).map((part) => Number(part.trim()));
-    if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0) {
+    if (
+      Number.isFinite(numerator) &&
+      Number.isFinite(denominator) &&
+      numerator > 0 &&
+      denominator > 0
+    ) {
       return numerator / denominator;
     }
     return null;
   }
 
   const value = Number(raw);
-  if (Number.isFinite(value) && value !== 0) {
+  if (Number.isFinite(value) && value > 0) {
     return value;
   }
 

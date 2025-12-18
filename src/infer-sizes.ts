@@ -96,8 +96,7 @@ export function inferImageSizes({
     customSpacing
   );
 
-  const baseInfo: SizeInfo = byBreakpoint.base ?? {};
-  byBreakpoint.base = baseInfo;
+  const baseInfo: SizeInfo = { ...(byBreakpoint.base ?? {}) };
   mergeStyleIntoSizeInfo(baseInfo, style);
 
   const aspectRatio = ratio ?? getSrcAspectRatio(src) ?? getAspectRatioFromClassName(className);
@@ -107,6 +106,10 @@ export function inferImageSizes({
     return null;
   }
 
-  const conditions = buildBreakpointConditions(byBreakpoint, aspectRatio, breakpoints);
+  const conditions = buildBreakpointConditions(
+    { ...byBreakpoint, base: baseInfo },
+    aspectRatio,
+    breakpoints
+  );
   return conditions.length === 0 ? resolvedBase : `${conditions.join(", ")}, ${resolvedBase}`;
 }

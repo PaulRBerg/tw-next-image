@@ -12,6 +12,22 @@ A Tailwind-first wrapper around `next/image`:
 Because it always uses `fill`, the wrapper must resolve to a non-zero height (via `size-*`, `h-*`, `aspect-*` class,
 inline `style={{ aspectRatio }}`, or the `ratio` prop).
 
+### Class Name Merging (Recommended)
+
+If your project uses a custom `tailwind-merge` config (e.g. extended theme tokens like `max-w-container`, `px-edge`),
+create a configured component by injecting your merge function:
+
+```tsx
+import { createSmartImage } from "tw-next-image";
+
+// Example: `extendTailwindMerge(...)` result from your app
+import { customTwMerge } from "./tailwind/merge";
+
+export const SmartImage = createSmartImage({ cx: customTwMerge });
+```
+
+This keeps `tw-next-image` framework-agnostic while letting the consuming app own Tailwind merge semantics.
+
 ### Basic Usage
 
 ```tsx

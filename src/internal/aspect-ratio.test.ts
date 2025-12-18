@@ -72,11 +72,10 @@ describe("getSrcAspectRatio", () => {
     expect(getSrcAspectRatio(src)).toBeNull();
   });
 
-  // Implementation note: negative dimensions are not guarded against.
-  // This is intentional since StaticImageData from Next.js always has positive dimensions.
-  it("handles negative dimensions by returning ratio (implementation quirk)", () => {
-    const src = { height: -1080, width: -1920 };
-    expect(getSrcAspectRatio(src)).toBeCloseTo(16 / 9);
+  it("rejects negative dimensions", () => {
+    expect(getSrcAspectRatio({ height: -100, width: -200 })).toBeNull();
+    expect(getSrcAspectRatio({ height: 100, width: -200 })).toBeNull();
+    expect(getSrcAspectRatio({ height: -100, width: 200 })).toBeNull();
   });
 
   it("returns null for array input (not a valid StaticImageData)", () => {
@@ -194,10 +193,9 @@ describe("getAspectRatioFromClassName", () => {
     expect(getAspectRatioFromClassName("aspect-[16/]")).toBeNull();
   });
 
-  // Implementation quirk: When numerator is empty, Number("") returns 0, so 0/9 = 0.
-  // This is malformed input that shouldn't occur in real usage.
-  it("returns 0 for malformed arbitrary ratio with only denominator", () => {
-    expect(getAspectRatioFromClassName("aspect-[/9]")).toBe(0);
+  // Malformed input that shouldn't occur in real usage.
+  it("rejects malformed arbitrary ratio with only denominator", () => {
+    expect(getAspectRatioFromClassName("aspect-[/9]")).toBeNull();
   });
 
   it("handles arbitrary ratio with decimal parts", () => {
@@ -212,8 +210,9 @@ describe("getAspectRatioFromClassName", () => {
     expect(getAspectRatioFromClassName("aspect-[invalid] aspect-video")).toBeCloseTo(16 / 9);
   });
 
-  it("handles negative arbitrary values", () => {
-    expect(getAspectRatioFromClassName("aspect-[-16/9]")).toBeCloseTo(-16 / 9);
+  it("rejects negative arbitrary values", () => {
+    expect(getAspectRatioFromClassName("aspect-[-1]")).toBeNull();
+    expect(getAspectRatioFromClassName("aspect-[-16/9]")).toBeNull();
   });
 
   it("parses very small arbitrary ratio", () => {

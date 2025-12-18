@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-
+import { cx } from "../internal/class-names.js";
+import { WHITESPACE_REGEX } from "../internal/constants.js";
+import { createSmartImage } from "./create-smart-image.js";
 import { SmartImage } from "./smart-image.js";
 
 // Mock next/image
@@ -51,6 +53,36 @@ describe("SmartImage", () => {
     render(<SmartImage className="size-11" imgClassName="object-cover" src="/test.png" />);
     const img = screen.getByRole("img");
     expect(img).toHaveClass("object-cover");
+  });
+
+  it("supports injecting a custom cx for 'last class wins' semantics", () => {
+    const SmartImageMerged = createSmartImage({
+      cx: (...values) => {
+        const base = cx(...values);
+        const tokens = base.split(WHITESPACE_REGEX).filter(Boolean);
+
+        const hasBlock = tokens.includes("block");
+        const hasInlineBlock = tokens.includes("inline-block");
+        const hasObjectCover = tokens.includes("object-cover");
+
+        return tokens
+          .filter((token) => !(hasBlock && hasInlineBlock && token === "inline-block"))
+          .filter((token) => !(hasObjectCover && token === "object-contain"))
+          .join(" ");
+      },
+    });
+
+    const { container } = render(
+      <SmartImageMerged className="block size-11" imgClassName="object-cover" src="/test.png" />
+    );
+
+    const wrapper = container.firstElementChild;
+    expect(wrapper).toHaveClass("block");
+    expect(wrapper).not.toHaveClass("inline-block");
+
+    const img = screen.getByRole("img");
+    expect(img).toHaveClass("object-cover");
+    expect(img).not.toHaveClass("object-contain");
   });
 
   it("falls back to 100vw in production when inference fails", () => {

@@ -27,7 +27,8 @@ export type InferSizesInput = {
    */
   customSpacing?: Record<string, string>;
   /**
-   * Optional width/height ratio (e.g. `16 / 9`), used only when width is not inferable but height is.
+   * Optional width-to-height ratio (e.g., `16 / 9` for landscape, `9 / 16` for portrait).
+   * Used only when width is not inferable but height is.
    * This is a last-resort escape hatch for layouts like `h-10 w-auto`.
    */
   ratio?: number;
