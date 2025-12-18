@@ -1,0 +1,35 @@
+name: "CI"
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v5"
+      - uses: "sablier-labs/devkit/actions/setup@v1"
+
+      - name: "Run the code checks"
+        run: "just full-check"
+
+      - name: "Run the tests"
+        run: "just test"
+
+      - name: "Build"
+        run: "just build"
+
+      - name: "Add summary"
+        if: always()
+        run: | # shell
+          echo "## CI result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Completed" >> $GITHUB_STEP_SUMMARY
