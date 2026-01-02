@@ -1,9 +1,11 @@
 import type { BreakpointConfig } from "../breakpoints.js";
-import type { BreakpointKey, InferSizesStyle, SizeInfo } from "../types.js";
+import type { InferSizesStyle, SizeInfo } from "../types.js";
 import { WHITESPACE_REGEX } from "./constants.js";
 import { parseStyleLength } from "./css-length.js";
 import { parseTailwindLength } from "./tailwind-length.js";
 import { getBreakpoint, parseVariantToken } from "./tailwind-variants.js";
+
+type BreakpointKey = string | "base";
 
 const SIZE_REGEX = /^size-(.+)$/;
 const WIDTH_REGEX = /^w-(.+)$/;

@@ -1,7 +1,5 @@
 import type { BreakpointConfig } from "./breakpoints.js";
 
-export type BreakpointKey = string | "base";
-
 export type InferSizesStyle = Partial<{
   width: number | string | null | undefined;
   maxWidth: number | string | null | undefined;
