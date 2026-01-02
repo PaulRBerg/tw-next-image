@@ -92,16 +92,21 @@ src/
 ├── infer-sizes.test.ts   # Tests
 ├── breakpoints.ts        # Tailwind breakpoint config
 ├── internal/             # Internal utilities (not exported)
-│   ├── aspect-ratio.ts   # Aspect ratio parsing
-│   ├── css-length.ts     # CSS length parsing/formatting
-│   ├── size-info.ts      # Size aggregation by breakpoint
+│   ├── aspect-ratio.ts       # Aspect ratio parsing
+│   ├── class-names.ts        # Class name utilities
+│   ├── constants.ts          # Shared constants
+│   ├── css-length.ts         # CSS length parsing/formatting
+│   ├── is-non-empty-string.ts # Type guard
+│   ├── size-info.ts          # Size aggregation by breakpoint
 │   ├── tailwind-length.ts    # Tailwind spacing utilities
 │   └── tailwind-variants.ts  # Tailwind class variant parsing
 ├── infer-sizes/
 │   └── index.ts          # Standalone barrel (no React)
 └── smart-image/
-    ├── index.ts          # SmartImage barrel
-    ├── smart-image.tsx   # SmartImage component
+    ├── index.ts                   # SmartImage barrel
+    ├── create-smart-image.tsx     # Factory for custom tailwind-merge
+    ├── create-smart-image.types.ts
+    ├── smart-image.tsx            # SmartImage component
     ├── smart-image.types.ts
     ├── smart-image.test.tsx
     └── get-alt-from-src.ts
@@ -112,11 +117,14 @@ src/
 ### Main exports (`tw-next-image`)
 
 - `SmartImage` - Tailwind-first Next.js image component
-- `SmartImageProps` - Props type for SmartImage
+- `createSmartImage` - Factory for custom tailwind-merge config
 - `inferImageSizes` - Infer sizes from className/style
+- `DEFAULT_BREAKPOINTS` - Tailwind v4 breakpoint config
+- Types: `SmartImageProps`, `SmartImageComponent`, `CreateSmartImageOptions`, `SmartImageClassNameFn`
+- Types: `InferSizesInput`, `InferSizesStyle`, `SizeInfo`, `StaticImageData`, `Breakpoint`, `BreakpointConfig`
 
 ### Standalone exports (`tw-next-image/infer-sizes`)
 
 - `inferImageSizes` - Core inference function (no React dependency)
 - `DEFAULT_BREAKPOINTS` - Tailwind v4 breakpoint config
-- Types: `InferSizesInput`, `SizeInfo`, `StaticImageData`, `Breakpoint`, `BreakpointConfig`
+- Types: `InferSizesInput`, `InferSizesStyle`, `SizeInfo`, `StaticImageData`, `Breakpoint`, `BreakpointConfig`
