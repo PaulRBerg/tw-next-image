@@ -1,17 +1,16 @@
 {
   "description": "Tailwind-first Next.js Image component with automatic sizes inference.",
-  "homepage": "https://github.com/PaulRBerg/tw-next-image",
+  "homepage": "https://github.com/PaulRBerg/tw-next-image#readme",
   "license": "MIT",
   "main": "./dist/index.js",
   "name": "tw-next-image",
   "sideEffects": false,
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "files": [
     "dist/**",
-    "CHANGELOG.md",
-    "LICENSE"
+    "CHANGELOG.md"
   ],
   "keywords": [
     "nextjs",
@@ -30,7 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
-    "@sablier/devkit": "^1.9.1",
+    "@sablier/devkit": "^1.10.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/node": "^25.0.3",
@@ -68,7 +67,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PaulRBerg/tw-next-image.git"
+    "url": "git+https://github.com/PaulRBerg/tw-next-image.git"
   },
   "scripts": {
     "setup": "husky"

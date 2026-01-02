@@ -9,20 +9,16 @@ See [DOCS.md](./DOCS.md) for full examples and API reference.
 
 ## Why
 
-The `next/image` component requires a [`sizes`][mdn-sizes] attribute to serve optimally-sized images. Without it, Next.js
-defaults to `100vw`—meaning a 64px thumbnail requests the same massive image as a full-width hero. This wastes bandwidth
-and hurts Core Web Vitals.
+The `next/image` component requires a [`sizes`][mdn-sizes] attribute to serve optimally-sized images. Without it,
+Next.js defaults to `100vw`—meaning a 64px thumbnail requests the same massive image as a full-width hero. This wastes
+bandwidth and hurts Core Web Vitals.
 
 The problem: crafting `sizes` by hand is tedious. Every responsive image needs a media query string that mirrors your
 CSS breakpoints:
 
 ```tsx
 // Manual sizes for a responsive image 😴
-<Image
-  src="/avatar.webp"
-  sizes="(min-width: 1024px) 120px, 100px"
-  className="size-25 lg:size-30"
-/>
+<Image src="/avatar.webp" sizes="(min-width: 1024px) 120px, 100px" className="size-25 lg:size-30" />
 ```
 
 **`tw-next-image` eliminates this busywork.** It parses your Tailwind classes and infers the correct `sizes`
@@ -49,6 +45,12 @@ automatically:
 ## 📦 Install
 
 ```bash
+npm install tw-next-image
+# or
+pnpm add tw-next-image
+# or
+yarn add tw-next-image
+# or
 bun add tw-next-image
 ```
 
