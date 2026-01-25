@@ -1,54 +1,108 @@
 import type { BreakpointConfig } from "./breakpoints.js";
 import { DEFAULT_BREAKPOINTS } from "./breakpoints.js";
 import { getAspectRatioFromClassName, getSrcAspectRatio } from "./internal/aspect-ratio.js";
-import { formatPx, minPx, parsePxNumber } from "./internal/css-length.js";
+import {
+  formatPx,
+  maxPx,
+  minPx,
+  parsePxNumber,
+  parseStyleAspectRatio,
+} from "./internal/css-length.js";
 import { mergeStyleIntoSizeInfo, parseSizeInfoByBreakpoint } from "./internal/size-info.js";
 import type { InferSizesInput, SizeInfo } from "./types.js";
 
 const DEFAULT_BASE_SPACING_PX = 4;
+type SizeConstraints = Pick<SizeInfo, "minWidth" | "maxWidth" | "minHeight" | "maxHeight">;
+
+function applyMinMax(
+  value: string,
+  minValue: string | undefined,
+  maxValue: string | undefined
+): string {
+  if (minValue && maxValue) {
+    const minPxValue = parsePxNumber(minValue);
+    const maxPxValue = parsePxNumber(maxValue);
+    const valuePx = parsePxNumber(value);
+    if (minPxValue !== null && maxPxValue !== null && valuePx !== null) {
+      const clamped = Math.min(Math.max(valuePx, minPxValue), maxPxValue);
+      return formatPx(clamped);
+    }
+    return `clamp(${minValue}, ${value}, ${maxValue})`;
+  }
+
+  if (minValue) {
+    return maxPx(value, minValue) ?? `max(${value}, ${minValue})`;
+  }
+
+  if (maxValue) {
+    return minPx(value, maxValue) ?? `min(${value}, ${maxValue})`;
+  }
+
+  return value;
+}
+
+function resolveHeightPx(info: SizeInfo): number | null {
+  const heightPx = info.height ? parsePxNumber(info.height) : null;
+  const minHeightPx = info.minHeight ? parsePxNumber(info.minHeight) : null;
+  const maxHeightPx = info.maxHeight ? parsePxNumber(info.maxHeight) : null;
+
+  if (heightPx !== null) {
+    let resolved = heightPx;
+    if (minHeightPx !== null) {
+      resolved = Math.max(resolved, minHeightPx);
+    }
+    if (maxHeightPx !== null) {
+      resolved = Math.min(resolved, maxHeightPx);
+    }
+    return resolved;
+  }
+
+  if (maxHeightPx !== null) {
+    let resolved = maxHeightPx;
+    if (minHeightPx !== null) {
+      resolved = Math.max(resolved, minHeightPx);
+    }
+    return resolved;
+  }
+
+  return null;
+}
 
 function computeResolvedWidth(info: SizeInfo, aspectRatio: number | null): string | null {
-  const fromWidthOrMax = (() => {
-    if (info.width && info.maxWidth) {
-      return minPx(info.width, info.maxWidth) ?? `min(${info.width}, ${info.maxWidth})`;
-    }
-    return info.width ?? info.maxWidth;
-  })();
+  if (info.width) {
+    return applyMinMax(info.width, info.minWidth, info.maxWidth);
+  }
 
-  if (fromWidthOrMax) {
-    return fromWidthOrMax;
+  if (info.maxWidth) {
+    return info.maxWidth;
   }
 
   if (!aspectRatio) {
     return null;
   }
 
-  const height = (() => {
-    if (info.height && info.maxHeight) {
-      return (
-        minPx(info.height, info.maxHeight) ??
-        (parsePxNumber(info.height) === null ? null : info.height) ??
-        (parsePxNumber(info.maxHeight) === null ? null : info.maxHeight)
-      );
-    }
-    return info.height ?? info.maxHeight ?? null;
-  })();
-  if (!height) {
-    return null;
-  }
-
-  const heightPx = parsePxNumber(height);
+  const heightPx = resolveHeightPx(info);
   if (heightPx === null) {
     return null;
   }
 
-  return formatPx(heightPx * aspectRatio);
+  return applyMinMax(formatPx(heightPx * aspectRatio), info.minWidth, info.maxWidth);
+}
+
+function getBaseConstraints(info: SizeInfo): SizeConstraints {
+  return {
+    maxHeight: info.maxHeight,
+    maxWidth: info.maxWidth,
+    minHeight: info.minHeight,
+    minWidth: info.minWidth,
+  };
 }
 
 function buildBreakpointConditions(
   byBreakpoint: Partial<Record<string, SizeInfo>>,
   aspectRatio: number | null,
-  breakpoints: BreakpointConfig
+  breakpoints: BreakpointConfig,
+  baseConstraints: SizeConstraints
 ): string[] {
   const conditions: string[] = [];
   const orderedBreakpoints = (Object.entries(breakpoints) as [string, number][]).sort(
@@ -60,7 +114,7 @@ function buildBreakpointConditions(
     if (!sizeInfo) {
       continue;
     }
-    const resolvedWidth = computeResolvedWidth(sizeInfo, aspectRatio);
+    const resolvedWidth = computeResolvedWidth({ ...baseConstraints, ...sizeInfo }, aspectRatio);
     if (!resolvedWidth) {
       continue;
     }
@@ -74,9 +128,10 @@ function buildBreakpointConditions(
  * Infer a Next.js `sizes` string from Tailwind sizing utilities applied to the wrapper.
  *
  * Supports:
- * - `size-*`, `w-*`, `max-w-*` (with responsive prefixes like `lg:`)
+ * - `size-*`, `w-*`, `min-w-*`, `max-w-*` (with responsive prefixes like `lg:`)
+ * - `h-*`, `min-h-*`, `max-h-*` (for ratio-based inference)
  * - Arbitrary values: `w-[350px]`, `max-w-[calc(100vw-640px)]`
- * - Inline styles: `style={{ width: 120 }}`
+ * - Inline styles: `style={{ width: 120, minWidth: 80, aspectRatio: 1.5 }}`
  *
  * Returns `null` when inference is not possible.
  */
@@ -99,7 +154,12 @@ export function inferImageSizes({
   const baseInfo: SizeInfo = { ...(byBreakpoint.base ?? {}) };
   mergeStyleIntoSizeInfo(baseInfo, style);
 
-  const aspectRatio = ratio ?? getSrcAspectRatio(src) ?? getAspectRatioFromClassName(className);
+  const baseConstraints = getBaseConstraints(baseInfo);
+  const aspectRatio =
+    ratio ??
+    parseStyleAspectRatio(style?.aspectRatio) ??
+    getSrcAspectRatio(src) ??
+    getAspectRatioFromClassName(className);
 
   const resolvedBase = computeResolvedWidth(baseInfo, aspectRatio);
   if (!resolvedBase) {
@@ -107,9 +167,10 @@ export function inferImageSizes({
   }
 
   const conditions = buildBreakpointConditions(
-    { ...byBreakpoint, base: baseInfo },
+    byBreakpoint,
     aspectRatio,
-    breakpoints
+    breakpoints,
+    baseConstraints
   );
   return conditions.length === 0 ? resolvedBase : `${conditions.join(", ")}, ${resolvedBase}`;
 }

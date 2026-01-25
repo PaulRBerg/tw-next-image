@@ -9,8 +9,10 @@ type BreakpointKey = string | "base";
 
 const SIZE_REGEX = /^size-(.+)$/;
 const WIDTH_REGEX = /^w-(.+)$/;
+const MIN_WIDTH_REGEX = /^min-w-(.+)$/;
 const MAX_WIDTH_REGEX = /^max-w-(.+)$/;
 const HEIGHT_REGEX = /^h-(.+)$/;
+const MIN_HEIGHT_REGEX = /^min-h-(.+)$/;
 const MAX_HEIGHT_REGEX = /^max-h-(.+)$/;
 
 type SizingHandler = {
@@ -34,6 +36,12 @@ const SIZING_HANDLERS = [
   },
   {
     apply: (info, value) => {
+      info.minWidth = value;
+    },
+    regex: MIN_WIDTH_REGEX,
+  },
+  {
+    apply: (info, value) => {
       info.maxWidth = value;
     },
     regex: MAX_WIDTH_REGEX,
@@ -43,6 +51,12 @@ const SIZING_HANDLERS = [
       info.height = value;
     },
     regex: HEIGHT_REGEX,
+  },
+  {
+    apply: (info, value) => {
+      info.minHeight = value;
+    },
+    regex: MIN_HEIGHT_REGEX,
   },
   {
     apply: (info, value) => {
@@ -94,18 +108,26 @@ export function mergeStyleIntoSizeInfo(info: SizeInfo, style: InferSizesStyle | 
   }
 
   const styleWidth = parseStyleLength(style.width);
+  const styleMinWidth = parseStyleLength(style.minWidth);
   const styleMaxWidth = parseStyleLength(style.maxWidth);
   const styleHeight = parseStyleLength(style.height);
+  const styleMinHeight = parseStyleLength(style.minHeight);
   const styleMaxHeight = parseStyleLength(style.maxHeight);
 
   if (styleWidth) {
     info.width = styleWidth;
+  }
+  if (styleMinWidth) {
+    info.minWidth = styleMinWidth;
   }
   if (styleMaxWidth) {
     info.maxWidth = styleMaxWidth;
   }
   if (styleHeight) {
     info.height = styleHeight;
+  }
+  if (styleMinHeight) {
+    info.minHeight = styleMinHeight;
   }
   if (styleMaxHeight) {
     info.maxHeight = styleMaxHeight;

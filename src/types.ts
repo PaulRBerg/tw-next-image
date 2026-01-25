@@ -1,9 +1,12 @@
 import type { BreakpointConfig } from "./breakpoints.js";
 
 export type InferSizesStyle = Partial<{
+  aspectRatio: number | string | null | undefined;
   width: number | string | null | undefined;
+  minWidth: number | string | null | undefined;
   maxWidth: number | string | null | undefined;
   height: number | string | null | undefined;
+  minHeight: number | string | null | undefined;
   maxHeight: number | string | null | undefined;
 }>;
 
@@ -39,7 +42,9 @@ export type InferSizesInput = {
 
 export type SizeInfo = {
   height?: string;
+  minHeight?: string;
   maxHeight?: string;
+  minWidth?: string;
   maxWidth?: string;
   width?: string;
 };

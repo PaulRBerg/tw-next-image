@@ -71,7 +71,8 @@ import { SmartImage } from "tw-next-image";
 ```
 
 `SmartImage` wraps `next/image` with `fill` mode—ensure the wrapper has height via `size-*`, `h-*`, `aspect-*`, or
-inline styles.
+inline styles. Inference also respects `min-w-*`/`max-w-*` and `min-h-*`/`max-h-*` constraints, and uses
+`style.aspectRatio` for height-only layouts.
 
 ## 🔧 Custom `tailwind-merge`
 

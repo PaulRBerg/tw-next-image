@@ -72,6 +72,10 @@ import { SmartImage } from "tw-next-image";
 <SmartImage src="/hero.webp" className="w-full max-w-80" />
 // → sizes="320px"
 
+// Min + max width constraint
+<SmartImage src="/card.webp" className="w-[50%] min-w-40 max-w-80" />
+// → sizes="clamp(160px, 50%, 320px)"
+
 // Responsive max-width
 <SmartImage src="/content.webp" className="w-full max-w-prose lg:max-w-4xl" />
 // → sizes="(min-width: 1024px) 896px, 65ch"
@@ -91,6 +95,10 @@ import { SmartImage } from "tw-next-image";
 // Height + ratio prop (width = height × ratio)
 <SmartImage src="/banner.webp" className="h-10" ratio={2} />
 // → sizes="80px"
+
+// Height + min-height constraint
+<SmartImage src="/banner.webp" className="h-10 min-h-20" ratio={2} />
+// → sizes="160px"
 
 // Static image import (aspect ratio inferred)
 import hero from "./hero.webp";
@@ -191,6 +199,13 @@ inferImageSizes({
 });
 // → "400px"
 
+// Aspect ratio from style
+inferImageSizes({
+  className: "h-10",
+  style: { aspectRatio: "2" },
+});
+// → "80px"
+
 // Max-width constraint
 inferImageSizes({
   className: "w-full",
@@ -232,15 +247,15 @@ inferImageSizes({
 
 #### `InferSizesInput`
 
-| Property        | Type                     | Default       | Description                                             |
-| --------------- | ------------------------ | ------------- | ------------------------------------------------------- |
-| `className`     | `string`                 | -             | Tailwind CSS classes                                    |
-| `style`         | `InferSizesStyle`        | -             | Inline styles (override classes)                        |
-| `ratio`         | `number`                 | -             | Width/height ratio for height-to-width conversion       |
-| `baseSpacingPx` | `number`                 | `4`           | Tailwind base spacing unit                              |
-| `src`           | `unknown`                | -             | Static image import for aspect ratio inference          |
-| `breakpoints`   | `BreakpointConfig`       | Default TW v4 | Custom breakpoint configuration                         |
-| `customSpacing` | `Record<string, string>` | `{}`          | Custom spacing values (e.g., `{ container: "1312px" }`) |
+| Property        | Type                     | Default       | Description                                                                                        |
+| --------------- | ------------------------ | ------------- | -------------------------------------------------------------------------------------------------- |
+| `className`     | `string`                 | -             | Tailwind CSS classes                                                                               |
+| `style`         | `InferSizesStyle`        | -             | Inline styles (`width`, `minWidth`, `maxWidth`, `height`, `minHeight`, `maxHeight`, `aspectRatio`) |
+| `ratio`         | `number`                 | -             | Width/height ratio for height-to-width conversion                                                  |
+| `baseSpacingPx` | `number`                 | `4`           | Tailwind base spacing unit                                                                         |
+| `src`           | `unknown`                | -             | Static image import for aspect ratio inference                                                     |
+| `breakpoints`   | `BreakpointConfig`       | Default TW v4 | Custom breakpoint configuration                                                                    |
+| `customSpacing` | `Record<string, string>` | `{}`          | Custom spacing values (e.g., `{ container: "1312px" }`)                                            |
 
 ## Configuration
 
@@ -297,6 +312,11 @@ inferImageSizes({
 - `w-full` — 100% (requires explicit `sizes` or max-width constraint)
 - `w-[{value}]` — Arbitrary value
 
+### Min-Width
+
+- `min-w-{n}` — Minimum width constraint
+- `min-w-[{value}]` — Arbitrary minimum width
+
 ### Max-Width
 
 - `max-w-{n}` — Maximum width constraint
@@ -311,6 +331,8 @@ inferImageSizes({
 ### Height (with ratio)
 
 - `h-{n}` — Height (requires `ratio` prop or static image for width inference)
+- `min-h-{n}` — Minimum height constraint
+- `max-h-{n}` — Maximum height constraint
 
 ### Responsive Prefixes
 

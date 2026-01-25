@@ -40,6 +40,10 @@ describe("inferImageSizes", () => {
     expect(inferImageSizes({ className: "h-20 max-h-10", ratio: 2 })).toBe("80px");
   });
 
+  test("respects min-height when deriving width from height + ratio", () => {
+    expect(inferImageSizes({ className: "h-10 min-h-20", ratio: 2 })).toBe("160px");
+  });
+
   test("returns null when it cannot infer", () => {
     expect(inferImageSizes({ className: "w-full" })).toBeNull();
   });
@@ -54,6 +58,20 @@ describe("inferImageSizes", () => {
   test("supports custom spacing", () => {
     const customSpacing = { container: "1312px" };
     expect(inferImageSizes({ className: "w-container", customSpacing })).toBe("1312px");
+  });
+
+  test("respects min-width when width is explicit", () => {
+    expect(inferImageSizes({ className: "w-10 min-w-20" })).toBe("80px");
+  });
+
+  test("applies base min-width constraints at breakpoints", () => {
+    expect(inferImageSizes({ className: "w-30 min-w-20 lg:w-10" })).toBe(
+      "(min-width: 1024px) 80px, 120px"
+    );
+  });
+
+  test("uses style aspect ratio for inference", () => {
+    expect(inferImageSizes({ className: "h-10", style: { aspectRatio: "2" } })).toBe("80px");
   });
 
   test("infers aspect ratio from aspect-video class", () => {
