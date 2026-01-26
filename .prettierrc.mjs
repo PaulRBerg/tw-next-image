@@ -1,4 +1,4 @@
-import baseConfig from "@sablier/devkit/prettier" with { type: "json" };
+import baseConfig from "@sablier/devkit/prettier";
 
 /**
  * @see https://prettier.io/docs/configuration
