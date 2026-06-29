@@ -22,47 +22,47 @@ type SizingHandler = {
 
 const SIZING_HANDLERS = [
   {
+    regex: SIZE_REGEX,
     apply: (info, value) => {
       info.width = value;
       info.height = value;
     },
-    regex: SIZE_REGEX,
   },
   {
+    regex: WIDTH_REGEX,
     apply: (info, value) => {
       info.width = value;
     },
-    regex: WIDTH_REGEX,
   },
   {
+    regex: MIN_WIDTH_REGEX,
     apply: (info, value) => {
       info.minWidth = value;
     },
-    regex: MIN_WIDTH_REGEX,
   },
   {
+    regex: MAX_WIDTH_REGEX,
     apply: (info, value) => {
       info.maxWidth = value;
     },
-    regex: MAX_WIDTH_REGEX,
   },
   {
+    regex: HEIGHT_REGEX,
     apply: (info, value) => {
       info.height = value;
     },
-    regex: HEIGHT_REGEX,
   },
   {
+    regex: MIN_HEIGHT_REGEX,
     apply: (info, value) => {
       info.minHeight = value;
     },
-    regex: MIN_HEIGHT_REGEX,
   },
   {
+    regex: MAX_HEIGHT_REGEX,
     apply: (info, value) => {
       info.maxHeight = value;
     },
-    regex: MAX_HEIGHT_REGEX,
   },
 ] satisfies readonly SizingHandler[];
 
