@@ -17,7 +17,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v5"
-      - uses: "sablier-labs/devkit/actions/setup@v1"
+      - uses: "PaulRBerg/devkit/actions/setup@v1"
 
       - name: "Run the code checks"
         run: "just full-check"
